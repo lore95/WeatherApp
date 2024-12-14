@@ -4,13 +4,15 @@ class WeatherController: ObservableObject {
     @Published var forecastData: ForecastData? // Holds fetched weather data
     @Published var cityName: String = "Unknown" // Make it non-optional
     @Published var weatherDescription: String = "Loading..." // Human-readable weather description
+    @Published var dayIndex: Int = 0 // Human-readable weather description
+    
     @Published var hourlyToday: [(time: String, temp: Double, code: Int)] = [] // Hourly for today
     @Published var dailyWeatherIcons: [String] = [] // Daily weather icons
     @Published var hourlyWeatherIcons: [String] = [] // Hourly weather icons
     
     // MARK: - Background Image Selector
     var backgroundName: String {
-        guard let code = forecastData?.daily.weathercode.first else {
+        guard let code = forecastData?.daily.weathercode[dayIndex] else {
             return "default"  // Default background image name
         }
         switch code {

@@ -27,15 +27,15 @@ struct WeatherView: View {
                             .bold()
                             .foregroundColor(.white)
                         
-                        Text("\(Int(forecast.hourly.temperature_2m.first ?? 0))°")
+                        Text("\(Int(forecast.hourly.temperature_2m[weatherController.dayIndex] ?? 0))°")
                             .font(.system(size: 100, weight: .thin))
                             .foregroundColor(.white)
                         
-                        Text("Cloudy") // Placeholder for weather description
+                        Text(weatherController.weatherDescription) // Placeholder for weather description
                             .font(.title2)
                             .foregroundColor(.white)
                         
-                        Text("H: \(Int(forecast.daily.temperature_2m_max.first ?? 0))° L: \(Int(forecast.daily.temperature_2m_min.first ?? 0))°")
+                        Text("H: \(Int(forecast.daily.temperature_2m_max[weatherController.dayIndex] ?? 0))° L: \(Int(forecast.daily.temperature_2m_min[weatherController.dayIndex] ?? 0))°")
                             .foregroundColor(.white.opacity(0.8))
                             .font(.headline)
                     }
@@ -70,7 +70,8 @@ struct WeatherView: View {
                                 day: weatherController.formatDay(forecast.daily.time[index]),
                                 high: "\(Int(forecast.daily.temperature_2m_max[index]))",
                                 low: "\(Int(forecast.daily.temperature_2m_min[index]))",
-                                iconCode: Int(weatherCode)
+                                iconCode: Int(weatherCode),
+                                index: index
                             )
                         }
                         
@@ -82,6 +83,12 @@ struct WeatherView: View {
                                 low: data.low,
                                 iconCode: data.iconCode
                             )
+                            .onTapGesture {
+                                weatherController.dayIndex = data.index
+                                                weatherController.weatherDescription = weatherController.descriptionForWeatherCode(
+                                                    Int(data.iconCode)
+                                                )
+                                   }
                         }
                     }
                     .padding(.horizontal)
