@@ -93,7 +93,6 @@ struct WeatherView: View {
                                 ForEach(
                                     0..<forecast.hourly.time.count, id: \.self
                                 ) { index in
-                                    // Check if this hour is part of today's forecast
                                     if forecast.hourly.time[index].hasPrefix(
                                         forecast.daily.time.first ?? "")
                                     {
@@ -109,48 +108,54 @@ struct WeatherView: View {
                         }
                         .padding()
                     }
+                    .frame(height: 120)  // Fixed height for hourly forecast
                     .background(Color.white.opacity(0.2))
                     .clipShape(RoundedRectangle(cornerRadius: 16))
                     .padding()
 
                     // MARK: - Weekly Forecast
-                    VStack(spacing: 16) {
-                        // Preprocess the forecast data into an array of tuples
-                        let weeklyData = zip(
-                            0..<forecast.daily.time.count,
-                            forecast.daily.weathercode
-                        ).map { index, weatherCode in
-                            return (
-                                day: weatherController.formatDay(
-                                    forecast.daily.time[index]),
-                                high:
-                                    "\(Int(forecast.daily.temperature_2m_max[index]))",
-                                low:
-                                    "\(Int(forecast.daily.temperature_2m_min[index]))",
-                                iconCode: Int(weatherCode),
-                                index: index
-                            )
-                        }
-
-                        // Use preprocessed data in the ForEach loop
-                        ForEach(weeklyData, id: \.day) { data in
-                            WeeklyWeatherRow(
-                                day: data.day,
-                                high: data.high,
-                                low: data.low,
-                                iconCode: data.iconCode
-                            )
-                            .onTapGesture {
-                                weatherController.dayIndex = data.index
-                                weatherController.weatherDescription =
-                                    weatherController.descriptionForWeatherCode(
-                                        Int(data.iconCode)
+                    ScrollView(.vertical, showsIndicators: false) {
+                        VStack(spacing: 16) {
+                            if let forecast = weatherController.forecastData {
+                                let weeklyData = zip(
+                                    0..<forecast.daily.time.count,
+                                    forecast.daily.weathercode
+                                ).map { index, weatherCode in
+                                    return (
+                                        day: weatherController.formatDay(
+                                            forecast.daily.time[index]),
+                                        high:
+                                            "\(Int(forecast.daily.temperature_2m_max[index]))",
+                                        low:
+                                            "\(Int(forecast.daily.temperature_2m_min[index]))",
+                                        iconCode: Int(weatherCode),
+                                        index: index
                                     )
+                                }
+
+                                ForEach(weeklyData, id: \.day) { data in
+                                    WeeklyWeatherRow(
+                                        day: data.day,
+                                        high: data.high,
+                                        low: data.low,
+                                        iconCode: data.iconCode
+                                    )
+                                    .onTapGesture {
+                                        weatherController.dayIndex = data.index
+                                        weatherController.weatherDescription =
+                                            weatherController
+                                            .descriptionForWeatherCode(
+                                                Int(data.iconCode))
+                                    }
+                                }
                             }
                         }
+                        .padding()
                     }
-                    .padding(.horizontal)
-
+                    .frame(height: 250)  // Fixed height for weekly forecast
+                    .background(Color.white.opacity(0.2))
+                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                    .padding()
                 } else {
                     ProgressView("Loading Weather...")
                         .foregroundColor(.white)

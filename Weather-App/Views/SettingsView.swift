@@ -32,7 +32,7 @@ struct SettingsView: View {
                         .keyboardType(.numberPad) // Ensure only numbers can be typed
                         .padding()
                         .frame(width: 120)
-                        .background(Color.white)
+                        .background(Color.black)
                         .cornerRadius(8)
                         .shadow(radius: 2)
                     
